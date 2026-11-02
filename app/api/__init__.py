@@ -9,14 +9,14 @@ from __future__ import annotations
 from typing import TypeVar
 
 from flask import Blueprint, current_app, jsonify, request
-from pydantic import BaseModel, ValidationError
 
+from ..security.schema import Model, ValidationError
 from ..security.validation import error_details
 from ..services import Invalid
 
 api = Blueprint("api", __name__, url_prefix="/api/v1")
 
-M = TypeVar("M", bound=BaseModel)
+M = TypeVar("M", bound=Model)
 
 
 def ctx():

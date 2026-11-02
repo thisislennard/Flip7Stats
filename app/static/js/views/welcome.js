@@ -141,7 +141,6 @@ function stepSettings() {
       h('p.field__hint', 'Nach den offiziellen Regeln endet eine Partie bei 200 Punkten.')),
     sw('Mit Windows starten', settings.autostart_available ? 'Flip 7 Live startet automatisch nach der Anmeldung.' : 'Nur in der Flip7Live.exe verfügbar.',
       'autostart', !settings.autostart_available),
-    sw('Browser beim Start öffnen', 'Das Dashboard öffnet sich automatisch.', 'open_browser'),
   ];
 }
 
@@ -155,7 +154,7 @@ function stepDone() {
       ['3. Partie gewonnen', 'Wer die Punktzahl erreicht, gewinnt die Partie – dann startet die nächste.'],
       ['4. Abend beenden', 'Am Ende siehst du, wer wie viele Partien gewonnen hat.'],
     ]),
-    para('Flip 7 Live läuft im Hintergrund weiter. Über das gelbe „7“-Symbol unten rechts in der Taskleiste öffnest du das Dashboard wieder oder beendest das Programm.'),
+    para('Flip 7 Live läuft in diesem Fenster. Taste F schaltet das Dashboard in den Vollbildmodus – ideal für den Fernseher. Schließt du das Fenster, wird Flip 7 Live beendet; Spielstände bleiben gespeichert.'),
   ];
 }
 

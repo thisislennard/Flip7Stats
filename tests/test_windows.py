@@ -101,7 +101,7 @@ def test_pages_render_for_roles(admin, controller, viewer, app):
     assert viewer.get("/").status_code == 302
     assert viewer.get("/stats").status_code == 200
     local_no_session = app.test_client().get("/")
-    assert local_no_session.status_code == 401 and "Infobereich" in local_no_session.data.decode()
+    assert local_no_session.status_code == 401 and "Verknüpfung" in local_no_session.data.decode()
 
 
 def test_setup_wizard_admin_only_and_completion_flag(admin, controller, ctx):

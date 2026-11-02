@@ -1,124 +1,104 @@
-"""Serverseitige Eingabeprüfung aller Schreibanfragen (Pydantic).
+"""Serverseitige Eingabeprüfung aller Schreibanfragen.
 
-Punkte müssen echte ganze Zahlen sein: keine Texte, keine Kommazahlen, keine Wahrheitswerte. Ein leeres Feld
-kommt als ``null`` an und wird abgelehnt – es wird nie stillschweigend als 0 gewertet.
+Punkte müssen echte ganze Zahlen sein: keine Texte, keine Kommazahlen, keine Wahrheitswerte. Ein leeres Feld kommt als
+``null`` an und bedeutet „Runde nicht mitgespielt“ – es wird nie stillschweigend als 0 gewertet.
 """
 
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from .schema import F, Model, ValidationError  # noqa: F401  (ValidationError für Aufrufer)
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StringConstraints, field_validator
-
-IdempotencyKey = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_-]{8,64}$")]
-PlayerName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
-GameName = Annotated[str, StringConstraints(strip_whitespace=True, max_length=80)]
+_KEY = r"^[A-Za-z0-9_-]{8,64}$"
+_TARGET = dict(ge=1, le=10_000)
 
 
-class _Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+def _ids(*, required: bool = False, min_len: int | None = None) -> F:
+    item = F("int")
+    if required:
+        return F("list", item=item, min_len=min_len, max_len=18, unique=True)
+    return F("list", item=item, min_len=min_len, max_len=18, unique=True, optional=True, default=None)
 
 
-def _unique(ids: list[int]) -> list[int]:
-    if len(ids) != len(set(ids)):
-        raise ValueError("Ein Spieler ist doppelt aufgeführt.")
-    return ids
+class GameCreate(Model):
+    name = F("str", strip=True, max_len=80, optional=True, default=None)
+    target_score = F("int", optional=True, default=None, **_TARGET)
+    player_ids = F("list", item=F("int"), max_len=18, unique=True, factory=list)
 
 
-class GameCreate(_Strict):
-    name: GameName | None = None
-    target_score: StrictInt | None = Field(None, ge=1, le=10_000)
-    player_ids: list[StrictInt] = Field(default_factory=list, max_length=18)
-
-    _check_ids = field_validator("player_ids")(_unique)
+class GameUpdate(Model):
+    name = F("str", strip=True, max_len=80, optional=True, default=None)
+    target_score = F("int", optional=True, default=None, **_TARGET)
+    player_ids = _ids()
 
 
-class GameUpdate(_Strict):
-    name: GameName | None = None
-    target_score: StrictInt | None = Field(None, ge=1, le=10_000)
-    player_ids: list[StrictInt] | None = Field(None, max_length=18)
-
-    @field_validator("player_ids")
-    @classmethod
-    def _ids(cls, v: list[int] | None) -> list[int] | None:
-        return _unique(v) if v is not None else v
+class GameContinue(Model):
+    target_score = F("int", optional=True, default=None, **_TARGET)
 
 
-class GameContinue(_Strict):
-    target_score: StrictInt | None = Field(None, ge=1, le=10_000)
+class NightCreate(Model):
+    name = F("str", strip=True, max_len=80, optional=True, default=None)
+    target_score = F("int", optional=True, default=None, **_TARGET)
+    player_ids = _ids(required=True, min_len=2)
 
 
-class NightCreate(_Strict):
-    name: GameName | None = None
-    target_score: StrictInt | None = Field(None, ge=1, le=10_000)
-    player_ids: list[StrictInt] = Field(min_length=2, max_length=18)
-
-    _check_ids = field_validator("player_ids")(_unique)
+class NightUpdate(Model):
+    name = F("str", strip=True, max_len=80, optional=True, default=None)
+    target_score = F("int", optional=True, default=None, **_TARGET)
 
 
-class NightUpdate(_Strict):
-    name: GameName | None = None
-    target_score: StrictInt | None = Field(None, ge=1, le=10_000)
+class NextGame(Model):
+    player_ids = _ids(min_len=2)
+    target_score = F("int", optional=True, default=None, **_TARGET)
 
 
-class NextGame(_Strict):
-    player_ids: list[StrictInt] | None = Field(None, min_length=2, max_length=18)
-    target_score: StrictInt | None = Field(None, ge=1, le=10_000)
-
-    @field_validator("player_ids")
-    @classmethod
-    def _ids(cls, v: list[int] | None) -> list[int] | None:
-        return _unique(v) if v is not None else v
+class PlayerCreate(Model):
+    display_name = F("str", strip=True, min_len=1, max_len=40)
 
 
-class PlayerCreate(_Strict):
-    display_name: PlayerName
+class PlayerUpdate(Model):
+    display_name = F("str", strip=True, min_len=1, max_len=40)
 
 
-class PlayerUpdate(_Strict):
-    display_name: PlayerName
+class ScoreEntry(Model):
+    player_id = F("int")
+    points = F("int", optional=True)  # Pflichtfeld; None = Feld leer gelassen → Runde nicht mitgespielt
 
 
-class ScoreEntry(_Strict):
-    player_id: StrictInt
-    points: StrictInt | None  # None = Feld leer gelassen → Runde nicht mitgespielt
+class RoundCreate(Model):
+    idempotency_key = F("str", pattern=_KEY)
+    round_number = F("int", ge=1)
+    scores = F("list", item=F(ScoreEntry), min_len=1, max_len=18)
 
 
-class RoundCreate(_Strict):
-    idempotency_key: IdempotencyKey
-    round_number: StrictInt = Field(ge=1)
-    scores: list[ScoreEntry] = Field(min_length=1, max_length=18)
+class RoundUpdate(Model):
+    idempotency_key = F("str", pattern=_KEY, optional=True, default=None)
+    scores = F("list", item=F(ScoreEntry), min_len=1, max_len=18)
 
 
-class RoundUpdate(_Strict):
-    idempotency_key: IdempotencyKey | None = None
-    scores: list[ScoreEntry] = Field(min_length=1, max_length=18)
+class SettingsUpdate(Model):
+    autostart = F("bool", optional=True, default=None)
+    open_browser = F("bool", optional=True, default=None)
+    default_target_score = F("int", optional=True, default=None, **_TARGET)
+    default_player_count = F("int", optional=True, default=None, ge=2, le=18)
+    network_mode = F("choice", choices=("auto", "wlan_only", "prefer_hotspot"), optional=True, default=None)
+    port = F("int", optional=True, default=None, ge=1024, le=65535)
+    hotspot_ssid = F("str", strip=True, min_len=1, max_len=32, optional=True, default=None)
+    hotspot_password = F("str", min_len=8, max_len=63, optional=True, default=None)
+    max_round_points = F("int", optional=True, default=None, ge=1, le=100_000)
+    backup_keep = F("int", optional=True, default=None, ge=1, le=500)
+    setup_completed = F("bool", optional=True, default=None)
 
 
-class SettingsUpdate(_Strict):
-    autostart: bool | None = None
-    open_browser: bool | None = None
-    default_target_score: StrictInt | None = Field(None, ge=1, le=10_000)
-    default_player_count: StrictInt | None = Field(None, ge=2, le=18)
-    network_mode: Literal["auto", "wlan_only", "prefer_hotspot"] | None = None
-    port: StrictInt | None = Field(None, ge=1024, le=65535)
-    hotspot_ssid: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=32)] | None = None
-    hotspot_password: Annotated[str, StringConstraints(min_length=8, max_length=63)] | None = None
-    max_round_points: StrictInt | None = Field(None, ge=1, le=100_000)
-    backup_keep: StrictInt | None = Field(None, ge=1, le=500)
-    setup_completed: bool | None = None
+class BackupRestore(Model):
+    name = F("str", pattern=r"^[A-Za-z0-9_.-]{1,120}\.db$")
 
 
-class BackupRestore(_Strict):
-    name: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9_.-]{1,120}\.db$")]
-
-
-class TokenRotate(_Strict):
-    role: Literal["controller", "viewer"]
+class TokenRotate(Model):
+    role = F("choice", choices=("controller", "viewer"))
 
 
 def error_details(exc) -> list[dict]:
-    """Pydantic-Fehler in eine knappe, verständliche Liste übersetzen (ohne interne Typnamen)."""
+    """Prüffehler in eine knappe, verständliche Liste übersetzen (ohne interne Typnamen)."""
     out = []
     for err in exc.errors():
         loc = ".".join(str(p) for p in err.get("loc", ()))
@@ -140,6 +120,14 @@ def _german(err: dict) -> str:
             return "Bitte einen Text eingeben."
         case "string_too_long":
             return "Der Text ist zu lang."
+        case "bool_type":
+            return "Bitte ja oder nein angeben."
+        case "string_type":
+            return "Bitte einen Text eingeben."
+        case "list_type" | "model_type":
+            return "Ungültiger Wert."
+        case "literal_error":
+            return "Ungültige Auswahl."
         case "missing":
             return "Angabe fehlt."
         case "extra_forbidden":

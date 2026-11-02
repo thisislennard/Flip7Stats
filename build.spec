@@ -1,4 +1,6 @@
 # PyInstaller-Konfiguration für Flip7Live.exe (eine Datei, ohne Konsolenfenster, mit App-Icon).
+# Wichtig: Die EXE enthält keinen unsignierten, kompilierten Fremdcode (.pyd/.dll aus site-packages) – Smart App
+# Control blockiert ihn. Python selbst (PSF-signiert) und Microsofts WebView2Loader.dll sind signiert.
 # Aufruf über scripts/build_windows.ps1 – oder direkt: pyinstaller --noconfirm --clean build.spec
 # -*- mode: python ; coding: utf-8 -*-
 
@@ -34,24 +36,32 @@ datas = [
     (str(ROOT / "app" / "static"), "app/static"),
     (str(ROOT / "app" / "database" / "migrations"), "app/database/migrations"),
 ]
+binaries = [(str(ROOT / "app" / "desktop" / "webview2" / "WebView2Loader.dll"), "app/desktop/webview2")]
 
 hiddenimports = (
     collect_submodules("app")
-    + ["engineio.async_drivers.threading", "simple_websocket", "pystray._win32", "sqlalchemy.dialects.sqlite",
+    + ["engineio.async_drivers.threading", "simple_websocket", "sqlalchemy.dialects.sqlite",
        "alembic.runtime.migration", "alembic.ddl.sqlite"]
 )
 
 a = Analysis(
     ["launcher.py"],
     pathex=[str(ROOT)],
-    binaries=[],
+    binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
     runtime_hooks=[],
-    excludes=["tkinter", "pytest", "playwright", "eventlet", "gevent"],
+    excludes=["tkinter", "pytest", "playwright", "eventlet", "gevent", "PIL", "pystray", "pydantic", "pydantic_core",
+              "requests", "charset_normalizer", "markupsafe._speedups", "greenlet"],
     noarchive=False,
 )
+# Sicherheitsnetz: alles Kompilierte aus site-packages entfernen (reine Python-Rückfallebenen existieren).
+# SQLAlchemy muss ohne C-Erweiterung installiert sein (build_windows.ps1), sonst fehlen ihre *_cy-Module.
+dropped = [name for name, src, _ in a.binaries if "site-packages" in src.lower()]
+if dropped:
+    print("Ohne unsignierte Fremd-Binärdateien gebaut, entfernt:", ", ".join(dropped))
+a.binaries = [b for b in a.binaries if "site-packages" not in b[1].lower()]
 pyz = PYZ(a.pure)
 
 exe = EXE(

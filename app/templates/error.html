@@ -5,7 +5,7 @@
   <div class="empty">
     <p class="label">{% if status == 401 %}Kein Zugang{% elif status == 403 %}Nicht erlaubt{% elif status == 404 %}Nicht gefunden{% elif status == 429 %}Bitte warten{% else %}Hinweis{% endif %}</p>
     <p class="empty__text">{{ message }}</p>
-    {% if local %}<p class="muted">Das Symbol mit der gelben „7“ findest du unten rechts in der Taskleiste (ggf. hinter dem Pfeil „^“).</p>{% endif %}
+    {% if local %}<p class="muted">Flip 7 Live läuft in einem eigenen Fenster. Ein erneuter Start über die Verknüpfung holt das laufende Fenster nach vorn.</p>{% endif %}
   </div>
 </main>
 {% endblock %}

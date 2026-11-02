@@ -67,18 +67,35 @@ def setup_script(port: int | None, private_interface: int | None) -> str:
     return "; ".join(cmds)
 
 
-def request_setup(port: int | None, private_interface: int | None = None) -> bool:
-    """Startet das Skript mit UAC-Abfrage. True = Abfrage wurde angezeigt; ob zugestimmt wurde, zeigen check() und
-    die nächste Netzwerkprüfung."""
-    if not powershell.available() or (port is None and private_interface is None):
+def _elevated(script: str, what: str) -> bool:
+    """PowerShell-Skript mit UAC-Abfrage starten. True = Abfrage wurde angezeigt."""
+    if not powershell.available() or not script:
         return False
     # Klartext statt -EncodedCommand: erhöhte, base64-kodierte Skripte stuft Virenschutz gern als verdächtig ein.
     # Pfade enthalten unter Windows keine doppelten Anführungszeichen; einfache werden in _ps_quote verdoppelt.
-    args = f'-NoProfile -NonInteractive -WindowStyle Hidden -Command "{setup_script(port, private_interface)}"'
+    args = f'-NoProfile -NonInteractive -WindowStyle Hidden -Command "{script}"'
     try:
         rc = ctypes.windll.shell32.ShellExecuteW(None, "runas", "powershell.exe", args, None, 0)  # type: ignore[attr-defined]
     except (AttributeError, OSError):
         return False
-    log.info("Firewall/Netzwerkprofil angefordert (Regel: %s, privat: %s, ShellExecute %s)",
-             port is not None, private_interface is not None, rc)
+    log.info("%s angefordert (ShellExecute %s)", what, rc)
     return rc > 32
+
+
+def request_setup(port: int | None, private_interface: int | None = None) -> bool:
+    """Startet das Skript mit UAC-Abfrage. True = Abfrage wurde angezeigt; ob zugestimmt wurde, zeigen check() und
+    die nächste Netzwerkprüfung."""
+    if port is None and private_interface is None:
+        return False
+    return _elevated(setup_script(port, private_interface),
+                     f"Firewall/Netzwerkprofil (Regel: {port is not None}, privat: {private_interface is not None})")
+
+
+def removal_script() -> str:
+    return (f"Get-NetFirewallApplicationFilter -Program {_ps_quote(program_path())} | Get-NetFirewallRule | "
+            "Remove-NetFirewallRule")
+
+
+def request_removal() -> bool:
+    """Beim Deinstallieren: alle Regeln dieses Programms entfernen (eine UAC-Abfrage)."""
+    return _elevated(removal_script(), "Entfernen der Firewall-Regeln")

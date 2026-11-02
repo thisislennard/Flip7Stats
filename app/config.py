@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, Field, ValidationError
+from .security.schema import F, Model, ValidationError
 
 APP_NAME = "Flip7Live"
 APP_TITLE = "Flip 7 Live"
@@ -99,36 +99,34 @@ def _generate_hotspot_password() -> str:
 NetworkMode = Literal["auto", "wlan_only", "prefer_hotspot"]
 
 
-class Settings(BaseModel):
+class Settings(Model):
     """Benutzereinstellungen (``settings.json``)."""
 
-    autostart: bool = False
-    open_browser: bool = True
-    default_target_score: int = Field(200, ge=1, le=10_000)
-    default_player_count: int = Field(4, ge=2, le=18)
-    language: Literal["de"] = "de"
-    network_mode: NetworkMode = "auto"
-    port: int = Field(5000, ge=1024, le=65535)
-    hotspot_ssid: str = Field("Flip7-Live", min_length=1, max_length=32)
-    hotspot_password: str = Field(default_factory=_generate_hotspot_password, min_length=8, max_length=63)
-    max_round_points: int = Field(500, ge=1, le=100_000)
-    backup_keep: int = Field(20, ge=1, le=500)
+    extra = "ignore"
+    autostart = F("bool", default=False)
+    open_browser = F("bool", default=True)
+    default_target_score = F("int", default=200, ge=1, le=10_000)
+    default_player_count = F("int", default=4, ge=2, le=18)
+    language = F("choice", choices=("de",), default="de")
+    network_mode = F("choice", choices=("auto", "wlan_only", "prefer_hotspot"), default="auto")
+    port = F("int", default=5000, ge=1024, le=65535)
+    hotspot_ssid = F("str", default="Flip7-Live", min_len=1, max_len=32)
+    hotspot_password = F("str", factory=_generate_hotspot_password, min_len=8, max_len=63)
+    max_round_points = F("int", default=500, ge=1, le=100_000)
+    backup_keep = F("int", default=20, ge=1, le=500)
     # Einrichtungsassistent beim ersten Start schon durchlaufen?
-    setup_completed: bool = False
-
-    model_config = {"extra": "ignore"}
+    setup_completed = F("bool", default=False)
 
 
-class Secrets(BaseModel):
+class Secrets(Model):
     """Geheimnisse (``secrets.json``) – werden nie geloggt."""
 
-    secret_key: str = Field(default_factory=lambda: secrets.token_hex(32))
-    controller_token: str = Field(default_factory=lambda: secrets.token_urlsafe(24))
-    viewer_token: str = Field(default_factory=lambda: secrets.token_urlsafe(24))
-    controller_generation: int = 1
-    viewer_generation: int = 1
-
-    model_config = {"extra": "ignore"}
+    extra = "ignore"
+    secret_key = F("str", factory=lambda: secrets.token_hex(32))
+    controller_token = F("str", factory=lambda: secrets.token_urlsafe(24))
+    viewer_token = F("str", factory=lambda: secrets.token_urlsafe(24))
+    controller_generation = F("int", default=1)
+    viewer_generation = F("int", default=1)
 
 
 def _atomic_write_json(path: Path, data: dict) -> None:
@@ -137,8 +135,8 @@ def _atomic_write_json(path: Path, data: dict) -> None:
     os.replace(tmp, path)
 
 
-class _JsonStore[T: BaseModel]:
-    """Lädt/speichert ein Pydantic-Modell als JSON. Eine beschädigte Datei wird beiseitegelegt und durch Standardwerte ersetzt."""
+class _JsonStore[T: Model]:
+    """Lädt/speichert ein Modell als JSON. Eine beschädigte Datei wird beiseitegelegt und durch Standardwerte ersetzt."""
 
     def __init__(self, path: Path, model: type[T]):
         self.path = path
@@ -153,7 +151,7 @@ class _JsonStore[T: BaseModel]:
             _atomic_write_json(self.path, value.model_dump())
             return value
         try:
-            raw = json.loads(self.path.read_text(encoding="utf-8"))
+            raw = json.loads(self.path.read_text(encoding="utf-8-sig"))  # auch mit BOM (z. B. aus PowerShell)
             if not isinstance(raw, dict):
                 raise ValueError("Kein JSON-Objekt")
             value = self.model.model_validate(raw)

@@ -58,6 +58,8 @@ class Flip7Context:
     started_at: float = field(default_factory=time.time)
     ipc_secret: str = field(default_factory=lambda: secrets.token_urlsafe(32))
     shutdown_callback: Callable[[], None] | None = None
+    # Programmfenster: Adresse anzeigen und Fenster nach vorn holen (Zweitstart, Infos aus anderen Threads)
+    open_window_callback: Callable[[str], None] | None = None
 
     def __post_init__(self):
         self.games = GameService(self.db, lambda: self.settings.value.max_round_points)
@@ -268,8 +270,8 @@ def _register_pages(app: Flask, ctx: Flip7Context) -> None:
         role, reason = auth.session_state()
         if role is None:
             if auth.request_is_local():
-                return None, _page_error(401, "Bitte Flip 7 Live über das Symbol im Infobereich (unten rechts) "
-                                              "mit „Dashboard öffnen“ aufrufen.", local=True)
+                return None, _page_error(401, "Bitte Flip 7 Live über die Verknüpfung auf dem Desktop oder im "
+                                              "Startmenü öffnen.", local=True)
             msg = {"expired": "Die Sitzung ist abgelaufen.", "revoked": "Der Zugang wurde am Laptop erneuert.",
                    "admin_remote": "Administratorrechte gibt es nur direkt am Laptop."}.get(reason, "Kein Zugang.")
             return None, _page_error(401, msg + " Bitte den QR-Code auf dem Laptop scannen.")
@@ -325,7 +327,7 @@ def _register_pages(app: Flask, ctx: Flip7Context) -> None:
 
     @app.get("/admin/login")
     def admin_login():
-        """Einmaliger Anmeldelink, den nur die App selbst im Browser des Laptops öffnet."""
+        """Einmaliger Anmeldelink, den nur die App selbst öffnet (Programmfenster bzw. Browser am Laptop)."""
         if not auth.request_is_local():
             return _page_error(403, "Administratorrechte gibt es nur direkt am Laptop.")
         if not ctx.limiter.hit("auth", _client_key()):
@@ -333,8 +335,8 @@ def _register_pages(app: Flask, ctx: Flip7Context) -> None:
         if not ctx.admin_tokens.consume(request.args.get("once")):
             if auth.current_role() == auth.ADMIN:
                 return redirect("/")
-            return _page_error(403, "Dieser Anmeldelink ist abgelaufen. Bitte über das Symbol im Infobereich "
-                                    "„Dashboard öffnen“ wählen.", local=True)
+            return _page_error(403, "Dieser Anmeldelink ist abgelaufen. Bitte Flip 7 Live über die Verknüpfung "
+                                    "auf dem Desktop oder im Startmenü öffnen.", local=True)
         auth.login(auth.ADMIN)
         return redirect(safe_next(request.args.get("next")))
 
@@ -343,8 +345,20 @@ def _register_pages(app: Flask, ctx: Flip7Context) -> None:
         """Zweiter Programmstart fragt hier nach einem frischen Anmeldelink (nur lokal, mit Instanz-Geheimnis)."""
         if not auth.request_is_local() or not matches(request.headers.get("X-Flip7-IPC"), ctx.ipc_secret):
             return _error(403, "forbidden", "Nicht erlaubt.")
-        target = (request.get_json(silent=True) or {}).get("next")
-        return jsonify({"ok": True, "url": ctx.admin_login_url(safe_next(target))})
+        body = request.get_json(silent=True) or {}
+        url = ctx.admin_login_url(safe_next(body.get("next")))
+        shown = bool(ctx.open_window_callback) and body.get("show", True) is not False
+        if shown:
+            ctx.open_window_callback(url)
+        return jsonify({"ok": True, "url": url, "window": shown})
+
+    @app.post("/internal/shutdown")
+    def internal_shutdown():
+        """Installation/Deinstallation beendet die laufende Instanz (nur lokal, mit Instanz-Geheimnis)."""
+        if not auth.request_is_local() or not matches(request.headers.get("X-Flip7-IPC"), ctx.ipc_secret):
+            return _error(403, "forbidden", "Nicht erlaubt.")
+        ctx.request_shutdown()
+        return jsonify({"ok": True})
 
 
 def _error(status: int, code: str, message: str, details: dict | None = None):

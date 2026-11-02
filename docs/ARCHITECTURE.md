@@ -4,7 +4,7 @@
 
 ```
 ┌────────────── Laptop (Flip7Live.exe) ──────────────┐        ┌──── Smartphone ────┐
-│ launcher.py   Einzelinstanz, Start, Infobereich     │        │ Browser            │
+│ launcher.py   Einzelinstanz, Start, Programmfenster │        │ Browser            │
 │ Flask-App     Seiten + REST-API /api/v1             │◄──────►│ /controller        │
 │ Socket.IO     Live-Ereignisse (threading + WS)      │  WLAN  │ (Steuerungs-QR)    │
 │ Services      Spiellogik, Statistik, Backup         │        └────────────────────┘
@@ -21,7 +21,8 @@ der Server den kompletten Spielstand neu und verteilt ihn an alle Geräte.
 
 | Pfad | Aufgabe |
 |---|---|
-| `launcher.py` | Startablauf, Einzelinstanz, Zweitstart-Übergabe, Browser, Infobereich, sauberes Beenden |
+| `launcher.py` | Startablauf, Selbst-Installation/Deinstallation, Einzelinstanz, Zweitstart-Übergabe, Programmfenster, sauberes Beenden |
+| `app/desktop/` | Programmfenster mit WebView2 (`window.py`, nur ctypes + Microsofts signierte `WebView2Loader.dll`), Selbst-Installation (`installer.py`) |
 | `app/config.py` | Pfade, `settings.json`, `secrets.json` (defekte Dateien werden beiseitegelegt) |
 | `app/extensions.py` | `Database` (SQLite, WAL, Schreibsperre), Socket.IO-Instanz |
 | `app/server.py` | `Flip7Context` (alle Dienste einer Instanz), App-Fabrik, Seiten, Schutzprüfungen, Webserver |

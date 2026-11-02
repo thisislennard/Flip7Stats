@@ -68,9 +68,7 @@ function renderGeneral() {
   replace($('#allgemein'),
     group('Start',
       toggle('Mit Windows starten', settings.autostart_available ? 'Flip 7 Live startet automatisch nach der Windows-Anmeldung.'
-        : 'Nur in der Flip7Live.exe verfügbar.', settings.autostart, (v) => save({ autostart: v }), { disabled: !settings.autostart_available }),
-      toggle('Browser automatisch öffnen', 'Beim Start das Dashboard im Standardbrowser öffnen.', settings.open_browser,
-        (v) => save({ open_browser: v }))),
+        : 'Nur in der Flip7Live.exe verfügbar.', settings.autostart, (v) => save({ autostart: v }), { disabled: !settings.autostart_available })),
     group('Spiel',
       numberField('Standard-Punkteziel', 'Vorauswahl beim neuen Spiel.', settings.default_target_score, { min: 1, max: 10000, key: 'default_target_score' }),
       numberField('Standard-Spieleranzahl', 'So viele leere Zeilen zeigt „Neues Spiel“.', settings.default_player_count, { min: 2, max: 18, key: 'default_player_count' }),

@@ -65,22 +65,34 @@ Geräte verteilt. Fällt das WLAN kurz aus, verbinden sich alle Geräte von selb
 
 ## Download & Start
 
-1. **[`Flip7Live.exe` herunterladen](../../releases/latest)** – eine einzige Datei, keine Installation (läuft auch vom USB-Stick).
-2. Starten. Beim ersten Mal führt ein **Einrichtungsassistent** durch Netzwerk, Firewall und Smartphone-Verbindung.
-3. Den **QR-Code** auf dem Laptop mit dem Smartphone scannen – die Eingabe öffnet sich direkt im Browser.
-4. **Spieleabend starten**, Spieler auswählen, Punktzahl pro Partie festlegen – los geht's.
+1. **[`Flip7Live.exe` herunterladen](../../releases/latest)** – eine einzige Datei.
+2. Starten. Flip 7 Live fragt einmal: **„Jetzt installieren?“** – dann legt es eine Verknüpfung auf dem Desktop und im
+   Startmenü an und erscheint unter *Windows-Einstellungen › Apps*. Keine Administratorrechte nötig.
+   (*Nein* startet es einmalig ohne Installation, z. B. vom USB-Stick.)
+3. Flip 7 Live öffnet sich in einem **eigenen Fenster**. Beim ersten Mal führt ein **Einrichtungsassistent** durch
+   Netzwerk, Firewall und Smartphone-Verbindung.
+4. Den **QR-Code** im Fenster mit dem Smartphone scannen – die Eingabe öffnet sich am Handy direkt im Browser.
+5. **Spieleabend starten**, Spieler auswählen, Punktzahl pro Partie festlegen – los geht's.
 
-Flip 7 Live läuft danach im Hintergrund weiter: Das gelbe **„7“** im Infobereich (unten rechts) öffnet das Dashboard,
-zeigt die Verbindung oder beendet das Programm.
+Schließt du das Fenster, wird Flip 7 Live beendet (läuft gerade ein Spiel, fragt es vorher nach; gespeichert ist ohnehin
+alles). Ein erneuter Start über die Verknüpfung holt ein bereits laufendes Fenster nach vorn.
 
-**Systemvoraussetzungen:** Windows 10 oder 11 (64 Bit) und ein Smartphone mit Browser im selben WLAN – oder ein Hotspot
-(vom Laptop oder vom Handy). Für den Spielbetrieb sind keine Administratorrechte nötig.
+**Aktualisieren:** einfach die neue `Flip7Live.exe` starten – sie bietet an, die installierte Version zu ersetzen.
+Spielstände und Einstellungen bleiben erhalten.
+
+**Deinstallieren:** *Windows-Einstellungen › Apps › Flip 7 Live › Deinstallieren*. Flip 7 Live fragt dabei, ob auch alle
+Spielstände, Statistiken und Einstellungen gelöscht werden sollen (Standard: behalten).
+
+**Systemvoraussetzungen:** Windows 10 oder 11 (64 Bit) mit der Microsoft-WebView2-Laufzeit (bei Windows 11 immer dabei,
+bei Windows 10 meist über Microsoft Edge – fehlt sie, öffnet sich Flip 7 Live stattdessen im Browser) und ein Smartphone
+mit Browser im selben WLAN – oder ein Hotspot (vom Laptop oder vom Handy).
 
 > [!NOTE]
-> Die EXE ist nicht digital signiert. Windows SmartScreen zeigt deshalb beim ersten Start „Der Computer wurde durch
-> Windows geschützt“ – über **Weitere Informationen → Trotzdem ausführen** startet sie. Ist in Windows 11 die
-> **Smart App Control** aktiv, blockiert Windows unsignierte Programme grundsätzlich; dann bleibt nur der Start aus dem
-> Quellcode (siehe unten). Die Prüfsumme jeder Version steht in `SHA256SUMS.txt` beim Release.
+> Die EXE selbst ist nicht digital signiert. Windows SmartScreen zeigt deshalb beim ersten Start „Der Computer wurde
+> durch Windows geschützt“ – über **Weitere Informationen → Trotzdem ausführen** startet sie. Alle mitgelieferten
+> Programmbibliotheken sind signiert (Python Software Foundation bzw. Microsoft); Flip 7 Live enthält bewusst keinen
+> unsignierten kompilierten Fremdcode, damit es auch mit aktivierter **Smart App Control** läuft. Die Prüfsumme jeder
+> Version steht in `SHA256SUMS.txt` beim Release.
 
 ### Tastatur im Dashboard
 
@@ -124,8 +136,8 @@ cd Flip7Stats
 .\scripts\build_windows.ps1                   # Tests + PyInstaller → dist\Flip7Live.exe
 ```
 
-Aufbau: Flask + Flask-SocketIO (WebSocket), SQLAlchemy/SQLite mit Alembic-Migrationen, Pydantic, Oberfläche in reinem
-JavaScript ohne Build-Schritt. Mehr dazu:
+Aufbau: Flask + Flask-SocketIO (WebSocket), SQLAlchemy/SQLite mit Alembic-Migrationen, Oberfläche in reinem
+JavaScript ohne Build-Schritt, Programmfenster über WebView2 (nur ctypes, keine zusätzlichen nativen Pakete). Mehr dazu:
 
 - [Architektur](docs/ARCHITECTURE.md) – Module, Datenfluss, Live-Kommunikation, Netzwerk, Sicherheit
 - [API](docs/API.md) – REST-Endpunkte, Fehlercodes, Socket.IO-Ereignisse
@@ -134,7 +146,7 @@ JavaScript ohne Build-Schritt. Mehr dazu:
 ## Lizenz
 
 [MIT](LICENSE). Mitgelieferte Komponenten: Socket.IO-Client und Chart.js (MIT, Lizenztexte unter
-`app/static/js/vendor/`), Schriften Space Grotesk und Manrope (SIL Open Font License 1.1, `app/static/fonts/OFL.txt`).
+`app/static/js/vendor/`), Microsoft WebView2 Loader (BSD-artig, `app/desktop/webview2/LICENSE-WebView2.txt`), Schriften Space Grotesk und Manrope (SIL Open Font License 1.1, `app/static/fonts/OFL.txt`).
 
 Flip 7 Live ist ein privates Fanprojekt und steht in keiner Verbindung zum Verlag des Kartenspiels **Flip 7**. Das Spiel
 selbst brauchst du natürlich trotzdem. 🃏

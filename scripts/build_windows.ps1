@@ -35,6 +35,12 @@ Write-Host "Python $ver"
 Step "Abhängigkeiten installieren"
 & $py -m pip install --disable-pip-version-check -q -r requirements-dev.txt
 if ($LASTEXITCODE) { throw "pip install fehlgeschlagen" }
+# SQLAlchemy ohne kompilierte Beschleuniger: Smart App Control blockiert unsignierte DLLs in der EXE.
+$sqla = (Select-String -Path requirements.txt -Pattern '^SQLAlchemy==').Line
+$env:DISABLE_SQLALCHEMY_CEXT = "1"
+& $py -m pip install --disable-pip-version-check -q --force-reinstall --no-deps --no-binary sqlalchemy $sqla
+Remove-Item Env:DISABLE_SQLALCHEMY_CEXT
+if ($LASTEXITCODE) { throw "SQLAlchemy (reines Python) konnte nicht installiert werden" }
 
 # 3. Tests
 if (-not $SkipTests) {
@@ -48,7 +54,7 @@ Step "Frontend-Dateien prüfen"
 $required = @(
     "app\static\js\vendor\socket.io.min.js", "app\static\js\vendor\chart.umd.min.js",
     "app\static\fonts\SpaceGrotesk-Variable.woff2", "app\static\fonts\Manrope-Variable.woff2",
-    "app\static\assets\flip7live.ico", "app\static\assets\favicon.svg"
+    "app\static\assets\flip7live.ico", "app\static\assets\favicon.svg", "app\desktop\webview2\WebView2Loader.dll"
 )
 foreach ($f in $required) { if (-not (Test-Path $f)) { throw "Fehlt: $f" } }
 Write-Host "Alle Frontend-Dateien vorhanden"
@@ -80,7 +86,7 @@ New-Item -ItemType Directory -Force (Join-Path $testHome "config") | Out-Null
 '{"open_browser": false, "network_mode": "wlan_only", "port": 5099, "setup_completed": true}' |
     Set-Content -Encoding utf8 (Join-Path $testHome "config\settings.json")
 $env:FLIP7LIVE_HOME = $testHome
-$proc = Start-Process -FilePath $exe -ArgumentList "--no-browser", "--no-tray" -PassThru
+$proc = Start-Process -FilePath $exe -ArgumentList "--no-window", "--portable" -PassThru
 try {
     $info = $null
     for ($i = 0; $i -lt 60 -and -not $info; $i++) {
