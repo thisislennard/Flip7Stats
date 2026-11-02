@@ -1,0 +1,38 @@
+{% extends "_layout.html" %}
+{% block title %}Punkte eingeben{% endblock %}
+{% block body_class %}has-actionbar{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/views/control.css') }}?v={{ version }}">{% endblock %}
+{% block topbar %}{% endblock %}
+{% block content %}
+<main class="ctl" id="ctl" data-max-points="{{ max_points }}">
+  <header class="ctl__head" id="ctl-head">
+    <div class="ctl__title">
+      <span class="label" id="ctl-mode">Runde</span>
+      <span class="num ctl__round" id="ctl-round">–</span>
+    </div>
+    <div class="ctl__headside">
+      <span class="chip" id="live-chip"></span>
+      <a class="btn btn--tertiary btn--small" href="/">Menü</a>
+    </div>
+    <p class="ctl__hint caption" id="ctl-hint">Punkte eintragen · 0 bei Bust</p>
+  </header>
+  <div id="ctl-banner"></div>
+  <form id="ctl-form" class="ctl__list" novalidate autocomplete="off"></form>
+  <section class="ctl__rounds" id="ctl-rounds" aria-labelledby="rounds-title" hidden>
+    <h2 class="label" id="rounds-title">Gespeicherte Runden</h2>
+    <ol id="rounds-list" class="ctl__roundlist"></ol>
+  </section>
+  <section class="ctl__game" id="ctl-game" hidden></section>
+  <footer class="ctl__bar" id="ctl-bar">
+    <button class="btn btn--tertiary" type="button" id="fix-last" hidden></button>
+    <button class="btn btn--secondary" type="button" id="cancel-edit" hidden>Abbrechen</button>
+    <button class="btn btn--primary ctl__save" type="submit" form="ctl-form" id="save-btn">
+      <span id="save-label">Runde speichern</span><span class="ctl__count" id="save-count"></span>
+    </button>
+  </footer>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/socket.io.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/controller.js') }}?v={{ version }}"></script>
+{% endblock %}

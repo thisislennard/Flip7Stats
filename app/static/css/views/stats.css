@@ -1,0 +1,32 @@
+/* Langzeitstatistik. */
+
+#stats-root { display: flex; flex-direction: column; gap: var(--space-6); }
+.stats__head { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+.stats__picker { width: min(100%, 360px); }
+.stats__name { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; max-width: 100%; }
+.stats__name:hover { color: var(--color-yellow); text-decoration: underline; text-underline-offset: 4px; }
+.stats__table th:first-child, .stats__table td:first-child { position: sticky; left: 0; background: var(--color-bg); }
+.stats__modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-4); }
+.stats__module { background: var(--color-surface); padding: var(--space-4) var(--space-5); }
+.stats__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--space-5); }
+.stats__bars { display: flex; flex-direction: column; gap: var(--space-3); }
+.stats__bar { display: grid; grid-template-columns: minmax(80px, 160px) minmax(0, 1fr) 3ch; gap: var(--space-3); align-items: center;
+  font: var(--fw-semibold) var(--fs-body-l)/1.2 var(--font-display); }
+.stats__bar .num { text-align: right; font-weight: var(--fw-bold); }
+.stats__track { height: 18px; background: var(--color-line); }
+.stats__fill { display: block; height: 100%; background: var(--color-segment-fill); transition: width var(--dur-count) var(--ease-out); }
+.stats__bar:first-child .stats__fill { background: var(--color-yellow); }
+.stats__bars + .btn { margin-top: var(--space-3); align-self: flex-start; }
+.stats__chart { position: relative; height: 320px; }
+.stats__sub { margin-bottom: var(--space-3); }
+.stats__foot { max-width: 760px; }
+
+@media (max-width: 1023px) {
+  .stats__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 599px) {
+  .stats__modules { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+  .stats__module { padding: var(--space-3) var(--space-4); }
+  .stats__module .stat__value { font-size: 36px; }
+  .stats__chart { height: 260px; }
+}

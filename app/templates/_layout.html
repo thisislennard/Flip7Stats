@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="csrf-token" content="{{ csrf }}">
+  <title>{% block title %}{{ app_title }}{% endblock %} · {{ app_title }}</title>
+  <meta name="theme-color" content="#101116">
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.svg') }}" type="image/svg+xml">
+  <link rel="icon" href="{{ url_for('static', filename='assets/icon-32.png') }}" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='assets/apple-touch-icon.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='assets/manifest.webmanifest') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}?v={{ version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v={{ version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v={{ version }}">
+  {% block styles %}{% endblock %}
+</head>
+<body data-role="{{ role or '' }}" data-page="{{ page|default('') }}" class="{% block body_class %}{% endblock %}">
+  {% block topbar %}
+  <header class="topbar">
+    <a class="brand" href="{{ '/dashboard' if role == 'viewer' else '/' }}" aria-label="Flip 7 Live – Startseite">
+      <img class="brand__icon" src="{{ url_for('static', filename='assets/favicon.svg') }}" alt="" width="42" height="42"><span class="brand__word">FLIP 7 LIVE</span>
+    </a>
+    {% if role %}
+    <nav class="topbar__nav" aria-label="Hauptnavigation">
+      {% if role != 'viewer' %}<a href="/" {% if page == 'index' %}aria-current="page"{% endif %}>Start</a>{% endif %}
+      <a href="/dashboard" {% if page == 'dashboard' %}aria-current="page"{% endif %}>Live</a>
+      {% if role != 'viewer' %}<a href="/controller" {% if page == 'controller' %}aria-current="page"{% endif %}>Eingabe</a>{% endif %}
+      <a href="/history" {% if page == 'history' %}aria-current="page"{% endif %}>Historie</a>
+      <a href="/stats" {% if page == 'stats' %}aria-current="page"{% endif %}>Statistik</a>
+      {% if role == 'admin' %}<a href="/settings" {% if page == 'settings' %}aria-current="page"{% endif %}>Einstellungen</a>{% endif %}
+    </nav>
+    {% endif %}
+  </header>
+  {% endblock %}
+  {% block content %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,154 @@
+/* ==========================================================================
+   Flip 7 Live – Design Tokens „Kartenkante“ v1.0
+   Als erste CSS-Datei laden.
+   Keine externen Abhängigkeiten. Schriften liegen lokal in app/static/fonts/.
+   ========================================================================== */
+
+/* ---------- Schriften (SIL Open Font License 1.1, Lizenzdateien mitliefern) */
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("../fonts/SpaceGrotesk-Variable.woff2") format("woff2");
+  font-weight: 500 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("../fonts/Manrope-Variable.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Farbe: Grund & Flächen */
+  --color-bg:              #101116; /* Deep Charcoal  – Seitenhintergrund      */
+  --color-bg-sunken:       #15161c; /* Fußleisten, Aktionsleiste Smartphone    */
+  --color-surface:         #191b23; /* Graphite       – Panels, Ranglistenzeile */
+  --color-surface-raised:  #242733; /* Slate Graphite – Pips, Inputs           */
+  --color-surface-high:    #2c2f3c; /* Hover auf raised                        */
+  --color-line:            #2e3140; /* Trennlinien, Gitter, leere Segmente     */
+  --color-line-strong:     #3a3e4e; /* Outline-Buttons, Trenner                */
+
+  /* ---------- Farbe: Text (alle ≥ 4.5:1 auf --color-bg und --color-surface) */
+  --color-text:            #f5f5f2; /* Soft White                              */
+  --color-text-secondary:  #a3a6b4; /* Muted Silver  7.1:1 auf surface         */
+  --color-text-muted:      #858a9c; /* Dark Silver – angehoben von #737887 (4.28:1 → 5.0:1) */
+  --color-text-on-accent:  #101116; /* Text auf Gelb/Cyan/Coral                */
+
+  /* ---------- Farbe: Akzente */
+  --color-yellow:          #f8d548; /* Marke, Führung, Primäraktion, Ziel      */
+  --color-cyan:            #48d6e8; /* Live, Info, Fokusring, Links            */
+  --color-coral:           #f46b65; /* Bust, Fehler, Verbindung weg            */
+  --color-purple:          #a78bfa; /* nur Diagramm / Stapel                   */
+  --color-green:           #52d6a4; /* gespeichert, verbunden, Aufstieg        */
+  --color-orange:          #f4a64d; /* Warnung                                 */
+
+  --color-yellow-soft:     rgba(248, 213, 72, 0.14);
+  --color-cyan-soft:       rgba(72, 214, 232, 0.18);
+  --color-coral-soft:      rgba(244, 107, 101, 0.14);
+
+  /* Diagramm-Reihenfolge: Spieler 1..8 (Führender bekommt immer Gelb) */
+  --chart-1: #f8d548; --chart-2: #48d6e8; --chart-3: #f4a64d; --chart-4: #a78bfa;
+  --chart-5: #52d6a4; --chart-6: #f46b65; --chart-7: #c9ccd6; --chart-8: #7aa2ff;
+
+  /* ---------- Typografie */
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-ui:      "Manrope", "Segoe UI", system-ui, sans-serif;
+
+  --fs-numeric-xxl: clamp(160px, 12vw, 232px); /* Führungspunktzahl Dashboard */
+  --fs-display-xl:  clamp(96px, 10vw, 200px);  /* Gewinnername               */
+  --fs-display-l:   72px;   /* Rundennummer, Startseiten-Headline           */
+  --fs-numeric-l:   64px;   /* Gesamtpunkte Ranglistenzeile                  */
+  --fs-h1:          44px;
+  --fs-numeric-m:   40px;
+  --fs-h2:          28px;
+  --fs-h3:          22px;
+  --fs-body-l:      19px;
+  --fs-body:        17px;
+  --fs-label:       14px;   /* Großbuchstaben, Laufweite 2px                 */
+  --fs-caption:     13px;
+
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700; --fw-black: 800;
+  --tracking-tight:   -0.04em; /* große Ziffern                                */
+  --tracking-display: -0.02em;
+  --tracking-label:    0.16em; /* Labels in Versalien                          */
+  --lh-tight: 0.9; --lh-heading: 1.1; --lh-body: 1.55;
+
+  /* ---------- Abstand (4er-Raster) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
+
+  /* ---------- Form: Kartenecke (oben rechts gekappt, 45°) */
+  --notch-s: 12px; /* Buttons, Chips          */
+  --notch-m: 18px; /* Ranglistenzeilen, Panels */
+  --notch-l: 28px; /* große Panels            */
+  --notch-xl: 40px; /* Führung, Gewinnerkarte  */
+  --radius-input: 4px; /* einzige Rundung im System: Eingabefelder */
+
+  /* ---------- Form: 7-Schnitt */
+  --skew-7: -20deg;   /* Segmente, Trenner, Bewegungsrichtung */
+  --skew-tag: -12deg; /* Ereignis-Tags (FLIP 7, BUST)         */
+
+  /* ---------- Tiefe */
+  --shadow-raise: 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+  --shadow-stack: 0 24px 48px -16px rgba(0, 0, 0, 0.7);
+  --focus-ring: 0 0 0 3px var(--color-bg), 0 0 0 6px var(--color-cyan);
+
+  /* ---------- Bewegung */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);    /* Standard: ankommen       */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);    /* Positionswechsel         */
+  --ease-snap:   cubic-bezier(0.34, 1.56, 0.64, 1); /* Akzent mit leichtem Overshoot (sparsam) */
+  --dur-press:   140ms;
+  --dur-hover:   180ms;
+  --dur-page:    280ms;
+  --dur-count:   600ms;
+  --dur-rank:    550ms;
+  --dur-lead:    700ms;
+  --dur-round:   420ms;
+  --dur-winner:  1400ms;
+
+  /* ---------- Ebenen */
+  --z-base: 0; --z-raised: 10; --z-sticky: 100; --z-overlay: 500;
+  --z-modal: 600; --z-toast: 700; --z-celebration: 800;
+
+  /* ---------- Touch */
+  --touch-min: 48px;
+  --touch-input: 64px;
+
+  color-scheme: dark;
+}
+
+/* ---------- Breakpoints (als Referenz – in Media Queries ausgeschrieben)
+   --bp-phone:      < 600px
+   --bp-tablet:     600–1023px
+   --bp-laptop:     1024–1599px  (1366×768 Mindestziel)
+   --bp-desktop:    1600–2399px  (1920×1080 Primärziel)
+   --bp-wide:       ≥ 2400px oder Seitenverhältnis ≥ 2/1 (2560×1440, 3440×1440)
+*/
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-press: 0ms; --dur-hover: 0ms; --dur-page: 0ms; --dur-count: 0ms;
+    --dur-rank: 0ms;  --dur-lead: 0ms;  --dur-round: 0ms; --dur-winner: 0ms;
+  }
+}
+
+/* ---------- Hilfsklassen der Formsprache */
+.notch-s  { clip-path: polygon(0 0, calc(100% - var(--notch-s)) 0, 100% var(--notch-s), 100% 100%, 0 100%); }
+.notch-m  { clip-path: polygon(0 0, calc(100% - var(--notch-m)) 0, 100% var(--notch-m), 100% 100%, 0 100%); }
+.notch-l  { clip-path: polygon(0 0, calc(100% - var(--notch-l)) 0, 100% var(--notch-l), 100% 100%, 0 100%); }
+.notch-xl { clip-path: polygon(0 0, calc(100% - var(--notch-xl)) 0, 100% var(--notch-xl), 100% 100%, 0 100%); }
+.num      { font-family: var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: var(--tracking-tight); }
+.label    { font-family: var(--font-ui); font-size: var(--fs-label); font-weight: var(--fw-black); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-text-secondary); }
+
+/* ---------- Ergänzungen bei der Umsetzung (gleiche Formsprache, keine neuen Akzentfarben) */
+:root {
+  --color-scrim:        rgba(16, 17, 22, 0.8);  /* Modal-Hintergrund: Charcoal 80 %            */
+  --color-ghost-7:      #15161d;                /* riesige „7“ im Gewinner-Hintergrund         */
+  --color-row-focus:    #20222c;                /* Eingabezeile mit Fokus        */
+  --color-segment-fill: #c9ccd6;                /* gefülltes Fortschrittssegment               */
+  --color-orange-soft:  rgba(244, 166, 77, 0.14);
+  --color-green-soft:   rgba(82, 214, 164, 0.14);
+  --color-segment-on-accent: rgba(16, 17, 22, 0.18); /* leeres Segment auf Gelb                    */
+  --color-qr-bg:        #ffffff;                /* QR-Ruhezone: immer weiß        */
+  --tv-scale: 1;
+}

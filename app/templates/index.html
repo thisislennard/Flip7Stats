@@ -1,0 +1,35 @@
+{% extends "_layout.html" %}
+{% block title %}Start{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/views/start.css') }}?v={{ version }}">{% endblock %}
+{% block content %}
+<main class="page start">
+  <section class="start__main">
+    <h1 class="start__headline">Wer zieht heute die 7?</h1>
+    <div class="start__actions">
+      <a class="btn btn--primary btn--large" href="/setup" id="new-game">Neues Spiel starten</a>
+      <a class="start__resume" href="/dashboard" id="resume" hidden>
+        <span class="label">Fortsetzen</span>
+        <span class="start__resume-text" id="resume-text"></span>
+      </a>
+    </div>
+    <nav class="start__links" aria-label="Weitere Bereiche">
+      <a href="/history">Historie</a>
+      <a href="/stats">Statistik</a>
+      {% if role == 'admin' %}<a href="/settings">Einstellungen</a>{% endif %}
+    </nav>
+  </section>
+  <aside class="start__side">
+    <div class="fan" aria-hidden="true">
+      <span class="fan__card fan__card--5">5</span><span class="fan__card fan__card--6">6</span><span class="fan__card fan__card--7">7</span>
+    </div>
+    <section class="panel connbox" aria-labelledby="conn-title">
+      <div class="panel__head"><h2 id="conn-title" class="label">Smartphone verbinden</h2><span class="chip" id="conn-chip"></span></div>
+      <div id="conn-body" class="connbox__body"></div>
+    </section>
+  </aside>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/socket.io.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/start.js') }}?v={{ version }}"></script>
+{% endblock %}

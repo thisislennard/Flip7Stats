@@ -1,0 +1,31 @@
+/* Einrichtungsassistent: ein Schritt pro Seite, Fortschritt als geneigte Segmente (7-Schnitt). */
+
+.wiz { max-width: 880px; display: flex; flex-direction: column; gap: var(--space-6); padding-bottom: 140px; }
+.wiz__toplabel { margin-left: auto; }
+.wiz__progress { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-2); }
+.wiz__seg { display: flex; flex-direction: column; gap: var(--space-2); }
+.wiz__segbar { height: 10px; background: var(--color-line); transform: skewX(var(--skew-7)); transition: background-color var(--dur-hover); }
+.wiz__seg.is-done .wiz__segbar { background: var(--color-segment-fill); }
+.wiz__seg.is-current .wiz__segbar { background: var(--color-yellow); }
+.wiz__segname { font: var(--fw-black) 12px/1.2 var(--font-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-muted); }
+.wiz__seg.is-current .wiz__segname { color: var(--color-text); }
+.wiz__step { display: flex; flex-direction: column; gap: var(--space-5); animation: page-in var(--dur-page) var(--ease-out); }
+.wiz__title { font: var(--fw-bold) clamp(36px, 5vw, 64px)/1 var(--font-display); letter-spacing: var(--tracking-display); }
+.wiz__text { font-size: var(--fs-body-l); max-width: 62ch; }
+.wiz__list { display: flex; flex-direction: column; gap: var(--space-3); }
+.wiz__list li { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3) var(--space-4); background: var(--color-surface);
+  clip-path: polygon(0 0, calc(100% - var(--notch-s)) 0, 100% var(--notch-s), 100% 100%, 0 100%); }
+.wiz__list strong { font: var(--fw-semibold) var(--fs-body-l)/1.3 var(--font-display); }
+.wiz__panel { padding: var(--space-5); }
+.wiz__btns { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-3); }
+.wiz__phone { display: flex; gap: var(--space-6); align-items: center; flex-wrap: wrap; }
+.wiz__phoneinfo { display: flex; flex-direction: column; gap: var(--space-4); flex: 1; min-width: 260px; }
+.wiz__bar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) max(var(--space-5), calc((100vw - 880px) / 2)) calc(var(--space-4) + env(safe-area-inset-bottom));
+  background: var(--color-bg-sunken); border-top: 1px solid var(--color-line); z-index: var(--z-sticky); }
+.wiz__bar #next { margin-left: auto; }
+
+@media (max-width: 599px) {
+  .wiz__segname { display: none; }
+  .wiz__bar .btn--large { min-height: 64px; font-size: 20px; padding: 0 var(--space-5); }
+}

@@ -1,0 +1,33 @@
+{% extends "_layout.html" %}
+{% block title %}Historie{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/history.css') }}?v={{ version }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/winner.css') }}?v={{ version }}">
+{% endblock %}
+{% block content %}
+<main class="page history">
+  <div class="page-head">
+    <h1>Historie</h1>
+    <div class="history__tools">
+      <div class="segctl" role="group" aria-label="Sortierung" id="sort">
+        <button class="segctl__opt" type="button" data-sort="date" aria-pressed="true">Datum</button>
+        <button class="segctl__opt" type="button" data-sort="rounds" aria-pressed="false">Runden</button>
+        <button class="segctl__opt" type="button" data-sort="score" aria-pressed="false">Punktzahl</button>
+      </div>
+      <button class="btn btn--secondary btn--small" type="button" id="dir">Neueste zuerst</button>
+      {% if role != 'viewer' %}
+      <a class="btn btn--tertiary" href="/api/v1/history/export.csv" download>Alles als CSV</a>
+      <a class="btn btn--tertiary" href="/api/v1/history/export.json" download>Alles als JSON</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="history__layout">
+    <ol class="history__list" id="list" aria-label="Spieleabende und Spiele"></ol>
+    <section class="history__detail" id="detail" aria-live="polite"></section>
+  </div>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/chart.umd.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/history.js') }}?v={{ version }}"></script>
+{% endblock %}

@@ -1,0 +1,35 @@
+/* Einstellungen: horizontale Reiter, beschriftete Gruppen, eine Spalte max. 760 px (Netzwerk breiter). */
+
+.tabs { display: flex; gap: var(--space-5); border-bottom: 1px solid var(--color-line); margin-bottom: var(--space-6); overflow-x: auto; }
+.tabs__tab { border: 0; background: none; cursor: pointer; padding: var(--space-3) 0; color: var(--color-text-secondary);
+  font: var(--fw-bold) var(--fs-body-l)/1.2 var(--font-ui); border-bottom: 3px solid transparent; white-space: nowrap; }
+.tabs__tab:hover { color: var(--color-text); }
+.tabs__tab[aria-selected="true"] { color: var(--color-text); border-bottom-color: var(--color-yellow); }
+.tabpanel { display: flex; flex-direction: column; gap: var(--space-7); max-width: 760px; }
+#netzwerk { max-width: 1200px; }
+.sgroup { display: flex; flex-direction: column; gap: var(--space-4); }
+.sgroup__title { padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-line); }
+.switch__label { display: block; font-weight: var(--fw-bold); }
+.switch__hint { display: block; }
+.sfield { max-width: 520px; }
+.sfield__num { max-width: 200px; }
+.sfield__row { display: flex; gap: var(--space-2); align-items: center; }
+.sbtns { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+.sinfo { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-2) var(--space-5); margin: 0; }
+.sinfo dt { font: var(--fw-black) var(--fs-label)/1.6 var(--font-ui); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-text-secondary); }
+.sinfo dd { margin: 0; overflow-wrap: anywhere; }
+.sbackups { display: flex; flex-direction: column; gap: var(--space-2); }
+.sbackup { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); background: var(--color-surface); }
+.sbackup__date { font: var(--fw-semibold) var(--fs-body-l)/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
+.sclients { display: flex; flex-direction: column; gap: var(--space-1); }
+.sclients li { display: grid; grid-template-columns: 120px 160px 1fr; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--color-line); }
+.sviewer { display: flex; gap: var(--space-5); align-items: center; flex-wrap: wrap; }
+.snet { padding: var(--space-6); }
+
+@media (max-width: 599px) {
+  .sinfo { grid-template-columns: 1fr; gap: 0 0; }
+  .sinfo dd { margin-bottom: var(--space-3); }
+  .sclients li { grid-template-columns: 1fr; }
+}
+.sgroup > .btn { align-self: flex-start; }
+.sfw__public { color: var(--color-orange); font-weight: var(--fw-semibold); }

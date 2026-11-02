@@ -1,0 +1,61 @@
+/* Smartphone-Steuerung: Zeilen ≥ 84 px, fixierte Aktionsleiste, Korrekturmodus orange gerahmt. */
+
+.ctl { max-width: 640px; margin: 0 auto; padding: var(--space-4) var(--space-4) calc(140px + env(safe-area-inset-bottom)); }
+.ctl__head { display: grid; grid-template-columns: 1fr auto; gap: var(--space-1) var(--space-3); align-items: center;
+  padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3); background: var(--color-surface);
+  clip-path: polygon(0 0, calc(100% - var(--notch-m)) 0, 100% var(--notch-m), 100% 100%, 0 100%); }
+.ctl__head.is-edit { box-shadow: inset 0 0 0 3px var(--color-orange); }
+.ctl__head.is-edit .label { color: var(--color-orange); }
+.ctl__title { display: flex; align-items: baseline; gap: var(--space-3); }
+.ctl__round { font-size: 56px; font-weight: var(--fw-bold); line-height: 1; }
+.ctl__headside { display: flex; align-items: center; gap: var(--space-2); }
+.ctl__hint { grid-column: 1 / -1; color: var(--color-text-secondary); }
+
+.ctl__list { display: flex; flex-direction: column; gap: var(--space-2); }
+.ctl__row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--space-3);
+  min-height: 84px; padding: var(--space-2) var(--space-3); background: var(--color-surface); transition: background-color var(--dur-hover); }
+.ctl__row.is-focus { background: var(--color-row-focus); }
+.ctl__who { display: flex; flex-direction: column; min-width: 0; cursor: pointer; }
+.ctl__name { font: var(--fw-semibold) 21px/1.2 var(--font-display); }
+.ctl__total { font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.ctl__msg { font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--color-coral); min-height: 0; }
+.ctl__msg:empty { display: none; }
+.ctl__msg.is-skip { color: var(--color-text-muted); font-weight: var(--fw-semibold); }
+.ctl__row.is-skipped .ctl__name { color: var(--color-text-secondary); }
+
+.ctl__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-sticky); display: flex; align-items: center; gap: var(--space-3);
+  justify-content: flex-end; flex-wrap: wrap; padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+  background: var(--color-bg-sunken); border-top: 1px solid var(--color-line); }
+.ctl__bar > #fix-last { margin-right: auto; }
+.ctl__save { min-height: 64px; flex: 1 1 220px; max-width: 360px; justify-content: space-between; }
+.ctl__save.is-incomplete { opacity: 0.6; }
+.ctl__save.is-done { background: var(--color-green); }
+.ctl__count { font-variant-numeric: tabular-nums; font-size: 16px; opacity: 0.8; }
+
+.ctl__pending { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3); background: var(--color-orange-soft); box-shadow: inset 0 0 0 2px var(--color-orange); }
+.ctl__pending strong { color: var(--color-orange); }
+.ctl__pendingdot { width: 22px; height: 8px; flex: none; background: repeating-linear-gradient(90deg, var(--color-orange) 0 4px, transparent 4px 8px);
+  transform: skewX(var(--skew-7)); animation: segrun 700ms linear infinite; }
+.ctl__pendingbtns { display: flex; gap: var(--space-2); margin-left: auto; }
+
+.ctl__rounds { margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); }
+.ctl__roundlist { display: flex; flex-direction: column; gap: var(--space-1); }
+.ctl__roundrow { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: var(--space-3);
+  padding: var(--space-1) var(--space-3); background: var(--color-surface); }
+.ctl__roundno { font-weight: var(--fw-bold); color: var(--color-text-secondary); }
+.ctl__roundpts { font-size: 15px; color: var(--color-text-secondary); }
+
+.ctl__game { margin-top: var(--space-6); }
+.ctl__gamebtns { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.ctl__gamebtns--quiet { justify-content: center; opacity: 0.9; }
+
+@media (max-width: 360px) {
+  .input-points { width: 88px; font-size: 28px; }
+  .btn-zero { width: 48px; }
+  .ctl__name { font-size: 18px; }
+}
+@media (min-width: 700px) {
+  .ctl__bar { justify-content: center; }
+}
+.ctl__danger { margin-top: var(--space-4); }

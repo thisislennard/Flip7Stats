@@ -1,0 +1,19 @@
+/* Verbindung & QR: links QR + Adresse, rechts Schritte, Hinweise, Aktionen. */
+
+.conn { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+.conn__qr { display: flex; gap: var(--space-4); flex-wrap: wrap; align-items: flex-end; }
+.conn__qrstep { display: flex; flex-direction: column; gap: var(--space-2); }
+.conn__noqr { width: 272px; aspect-ratio: 1; display: flex; flex-direction: column; justify-content: center; gap: var(--space-3);
+  padding: var(--space-5); background: var(--color-surface-raised); }
+.conn__info { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.conn__actions { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+.conn--large .qr--large { width: 392px; }
+.conn--small .conn__noqr { width: 200px; }
+
+@media (max-width: 1023px) {
+  .conn { grid-template-columns: 1fr; }
+  .conn--large .qr--large { width: min(320px, 100%); }
+}
+@media (max-width: 599px) {
+  .qr, .conn__noqr { width: min(240px, 100%); }
+}

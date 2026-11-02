@@ -1,0 +1,34 @@
+{% extends "_layout.html" %}
+{% block title %}Neuer Spieleabend{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/views/setup.css') }}?v={{ version }}">{% endblock %}
+{% block content %}
+<main class="page setup" data-default-target="{{ default_target }}" data-default-players="{{ default_players }}">
+  <h1>Neuer Spieleabend</h1>
+  <p class="muted setup__intro">Ihr spielt mehrere Partien hintereinander. Jede Partie endet, sobald jemand die Punktzahl erreicht – am Ende des Abends zählt, wer die meisten Partien gewonnen hat.</p>
+  <div id="setup-blocked" hidden></div>
+  <form id="setup-form" class="setup__form" novalidate>
+    <label class="field">
+      <span class="field__label">Name des Abends (optional)</span>
+      <input class="input" id="game-name" maxlength="80" autocomplete="off">
+    </label>
+    <section class="field" aria-labelledby="players-label">
+      <span class="field__label" id="players-label">Spieler</span>
+      <div class="chips-known" id="known-players"></div>
+      <ol class="setup__players" id="players"></ol>
+      <button type="button" class="setup__add" id="add-player">+ Spieler hinzufügen</button>
+    </section>
+    <section class="field" aria-labelledby="target-label">
+      <span class="field__label" id="target-label">Punktzahl pro Partie</span>
+      <div class="segctl" id="target-options" role="group" aria-labelledby="target-label"></div>
+      <input class="input setup__custom" id="target-custom" inputmode="numeric" pattern="[0-9]*" placeholder="eigenes Ziel" hidden aria-label="Eigenes Punkteziel">
+    </section>
+    <div class="setup__bar">
+      <p class="caption" id="start-hint"></p>
+      <button class="btn btn--primary btn--large" type="submit" id="start-game">Spieleabend starten</button>
+    </div>
+  </form>
+</main>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/views/setup.js') }}?v={{ version }}"></script>
+{% endblock %}

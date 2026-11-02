@@ -1,0 +1,13 @@
+{% extends "_layout.html" %}
+{% block title %}Statistik{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/views/stats.css') }}?v={{ version }}">{% endblock %}
+{% block content %}
+<main class="page stats">
+  <div class="page-head"><h1>Statistik</h1><p class="muted">Alle Spieleabende und Partien seit Beginn.</p></div>
+  <div id="stats-root"><div class="skeleton"></div><div class="skeleton"></div></div>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/chart.umd.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/stats.js') }}?v={{ version }}"></script>
+{% endblock %}

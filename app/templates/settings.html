@@ -1,0 +1,27 @@
+{% extends "_layout.html" %}
+{% block title %}Einstellungen{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/settings.css') }}?v={{ version }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/network.css') }}?v={{ version }}">
+{% endblock %}
+{% block content %}
+<main class="page settings">
+  <div class="page-head"><h1>Einstellungen</h1></div>
+  <div class="tabs" role="tablist" aria-label="Bereiche">
+    <button class="tabs__tab" type="button" role="tab" id="tab-allgemein" aria-controls="allgemein" aria-selected="true">Allgemein</button>
+    <button class="tabs__tab" type="button" role="tab" id="tab-netzwerk" aria-controls="netzwerk" aria-selected="false">Netzwerk</button>
+    <button class="tabs__tab" type="button" role="tab" id="tab-daten" aria-controls="daten" aria-selected="false">Daten &amp; Backup</button>
+    <button class="tabs__tab" type="button" role="tab" id="tab-anzeige" aria-controls="anzeige" aria-selected="false">Anzeige</button>
+    <button class="tabs__tab" type="button" role="tab" id="tab-system" aria-controls="system" aria-selected="false">System</button>
+  </div>
+  <section class="tabpanel" role="tabpanel" id="allgemein" aria-labelledby="tab-allgemein"></section>
+  <section class="tabpanel" role="tabpanel" id="netzwerk" aria-labelledby="tab-netzwerk" hidden></section>
+  <section class="tabpanel" role="tabpanel" id="daten" aria-labelledby="tab-daten" hidden></section>
+  <section class="tabpanel" role="tabpanel" id="anzeige" aria-labelledby="tab-anzeige" hidden></section>
+  <section class="tabpanel" role="tabpanel" id="system" aria-labelledby="tab-system" hidden></section>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/socket.io.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/settings.js') }}?v={{ version }}"></script>
+{% endblock %}

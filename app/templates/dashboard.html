@@ -1,0 +1,39 @@
+{% extends "_layout.html" %}
+{% block title %}Live{% endblock %}
+{% block body_class %}is-dashboard{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/dashboard.css') }}?v={{ version }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/winner.css') }}?v={{ version }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/network.css') }}?v={{ version }}">
+{% endblock %}
+{% block topbar %}{% endblock %}
+{% block content %}
+<div class="dash" id="dash">
+  <header class="dash__bar">
+    <div class="dash__head">
+      <a class="brand" href="{{ '/dashboard' if role == 'viewer' else '/' }}" aria-label="Startseite"><img class="brand__icon" src="{{ url_for('static', filename='assets/favicon.svg') }}" alt="" width="42" height="42"><span class="brand__word">FLIP 7 LIVE</span></a>
+      <span class="dash__game ellipsis" id="game-name"></span>
+    </div>
+    <div class="dash__meta">
+      <div class="dash__metric"><span class="label">Runde</span><span class="num dash__round" id="round-no">–</span></div>
+      <span class="dash__divider" aria-hidden="true"></span>
+      <div class="dash__metric"><span class="label">Ziel</span><span class="num dash__target" id="target">–</span></div>
+    </div>
+    <div class="dash__chips">
+      {% if role != 'viewer' %}<a class="chip chip--nav" href="/" title="Zurück zum Hauptmenü"><span aria-hidden="true">←</span> Menü</a>{% endif %}
+      <button class="chip" id="live-chip" type="button" aria-haspopup="dialog" title="Smartphone verbinden (Taste Q)"></button>
+      <span class="chip" id="ctrl-chip"></span>
+      <button class="chip" id="fs-btn" type="button" title="Vollbild (Taste F)"><span aria-hidden="true">⤢</span><span class="sr-only">Vollbild</span></button>
+    </div>
+  </header>
+  <main class="dash__body" id="dash-body"></main>
+  <p class="sr-only" aria-live="polite" id="live-region"></p>
+</div>
+<div class="qr-overlay" id="qr-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="qr-overlay-title"></div>
+<div class="celebration" id="celebration" hidden aria-hidden="true"></div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/socket.io.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vendor/chart.umd.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/dashboard.js') }}?v={{ version }}"></script>
+{% endblock %}

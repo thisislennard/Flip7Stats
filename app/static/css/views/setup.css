@@ -1,0 +1,34 @@
+/* Neues Spiel: einspaltig, max. 720 px, Start-Button unten fixiert. */
+
+.setup { max-width: 720px; padding-bottom: 140px; }
+.setup h1 { margin-bottom: var(--space-3); }
+.setup__intro { margin-bottom: var(--space-6); max-width: 60ch; }
+.setup__form { display: flex; flex-direction: column; gap: var(--space-6); }
+.setup__players { display: flex; flex-direction: column; gap: var(--space-2); }
+.setup__row { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: var(--space-3); align-items: center;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2); background: var(--color-surface);
+  clip-path: polygon(0 0, calc(100% - var(--notch-m)) 0, 100% var(--notch-m), 100% 100%, 0 100%); }
+.setup__pip { width: 54px; height: 66px; }
+.setup__pip .pip__rank { font-size: 30px; }
+.setup__name { font: var(--fw-semibold) var(--fs-h3)/1.2 var(--font-display); }
+.setup__rowbtns { display: flex; gap: var(--space-1); }
+.setup__rowbtns .btn { min-width: var(--touch-min); padding: 0; }
+.setup__add { min-height: 64px; width: 100%; border: 0; cursor: pointer; text-align: left; padding: 0 var(--space-5);
+  background: transparent; color: var(--color-cyan); font: var(--fw-bold) var(--fs-body-l)/1 var(--font-ui);
+  box-shadow: inset 0 0 0 2px var(--color-line); transition: background-color var(--dur-hover); }
+.setup__add:hover { background: var(--color-surface); }
+.chips-known { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.setup__known { width: 100%; max-width: 420px; }
+.setup__custom { max-width: 220px; margin-top: var(--space-2); }
+.setup__bar { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  padding: var(--space-4) 0 calc(var(--space-4) + env(safe-area-inset-bottom)); background: var(--color-bg); border-top: 1px solid var(--color-line);
+  flex-wrap: wrap; }
+.setup__blockbtns { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+@media (max-width: 599px) {
+  .setup__row { grid-template-columns: 44px minmax(0, 1fr); }
+  .setup__pip { width: 44px; height: 54px; }
+  .setup__pip .pip__rank { font-size: 24px; left: 7px; }
+  .setup__rowbtns { grid-column: 1 / -1; justify-content: flex-end; }
+  .setup__bar .btn { width: 100%; }
+}

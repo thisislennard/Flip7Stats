@@ -1,0 +1,11 @@
+{% extends "_layout.html" %}
+{% block title %}Hinweis{% endblock %}
+{% block content %}
+<main class="page page--narrow">
+  <div class="empty">
+    <p class="label">{% if status == 401 %}Kein Zugang{% elif status == 403 %}Nicht erlaubt{% elif status == 404 %}Nicht gefunden{% elif status == 429 %}Bitte warten{% else %}Hinweis{% endif %}</p>
+    <p class="empty__text">{{ message }}</p>
+    {% if local %}<p class="muted">Das Symbol mit der gelben „7“ findest du unten rechts in der Taskleiste (ggf. hinter dem Pfeil „^“).</p>{% endif %}
+  </div>
+</main>
+{% endblock %}

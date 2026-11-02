@@ -1,0 +1,26 @@
+{% extends "_layout.html" %}
+{% block title %}Einrichtung{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/welcome.css') }}?v={{ version }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/views/network.css') }}?v={{ version }}">
+{% endblock %}
+{% block topbar %}
+<header class="topbar">
+  <span class="brand"><img class="brand__icon" src="{{ url_for('static', filename='assets/favicon.svg') }}" alt="" width="42" height="42"><span class="brand__word">FLIP 7 LIVE</span></span>
+  <span class="label wiz__toplabel">Einrichtung</span>
+</header>
+{% endblock %}
+{% block content %}
+<main class="page wiz">
+  <ol class="wiz__progress" id="progress" aria-label="Fortschritt"></ol>
+  <section class="wiz__step" id="step" aria-live="polite"></section>
+  <footer class="wiz__bar">
+    <button class="btn btn--tertiary" type="button" id="back">Zurück</button>
+    <button class="btn btn--primary btn--large" type="button" id="next">Weiter</button>
+  </footer>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/socket.io.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/views/welcome.js') }}?v={{ version }}"></script>
+{% endblock %}

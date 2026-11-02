@@ -1,0 +1,34 @@
+/* Startseite: links Headline + Aktionen, rechts Kartenfächer 5-6-7 und Verbindungsbox. */
+
+.start { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--space-8); align-items: center;
+  min-height: calc(100vh - 72px); }
+.start__main { display: flex; flex-direction: column; gap: var(--space-6); }
+.start__headline { font: var(--fw-bold) clamp(56px, 6.5vw, 112px)/0.95 var(--font-display); letter-spacing: var(--tracking-display); max-width: 11ch; }
+.start__actions { display: flex; gap: var(--space-5); align-items: stretch; flex-wrap: wrap; }
+.start__resume { display: flex; flex-direction: column; justify-content: center; gap: var(--space-1); padding: var(--space-3) var(--space-5);
+  min-height: 88px; text-decoration: none; color: var(--color-text); box-shadow: inset 0 0 0 2px var(--color-line-strong);
+  transition: background-color var(--dur-hover); }
+.start__resume:hover { background: var(--color-surface); }
+.start__resume-text { font: var(--fw-semibold) var(--fs-h3)/1.2 var(--font-display); }
+.start__links { display: flex; gap: var(--space-6); flex-wrap: wrap; }
+.start__links a { font-weight: var(--fw-bold); font-size: var(--fs-body-l); }
+
+.start__side { display: flex; flex-direction: column; gap: var(--space-6); align-items: stretch; min-width: 0; }
+.fan { position: relative; height: 280px; }
+.fan__card { position: absolute; top: 20px; left: 50%; width: 160px; height: 224px; display: flex; align-items: flex-start; padding: var(--space-3) var(--space-4);
+  font: var(--fw-bold) 72px/1 var(--font-display); color: var(--color-text-on-accent); box-shadow: var(--shadow-stack);
+  clip-path: polygon(0 0, calc(100% - var(--notch-l)) 0, 100% var(--notch-l), 100% 100%, 0 100%); transform-origin: 50% 110%; }
+.fan__card--5 { background: var(--color-purple); transform: translateX(-130%) rotate(-14deg); }
+.fan__card--6 { background: var(--color-cyan); transform: translateX(-75%) rotate(-3deg); }
+.fan__card--7 { background: var(--color-yellow); transform: translateX(-20%) rotate(9deg); }
+.connbox { width: 100%; }
+.connbox__body { min-height: 120px; }
+
+@media (max-width: 1023px) {
+  .start { grid-template-columns: 1fr; gap: var(--space-6); min-height: 0; }
+  .fan { display: none; }
+}
+@media (max-width: 599px) {
+  .start__actions .btn--large { width: 100%; min-height: 72px; font-size: 22px; }
+  .start__resume { width: 100%; }
+}

@@ -1,0 +1,12 @@
+[project]
+name = "flip7live"
+version = "1.0.0"
+description = "Lokale Live-Punkteanzeige für das Kartenspiel Flip 7 (Windows, offline)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["error::sqlalchemy.exc.SAWarning"]
