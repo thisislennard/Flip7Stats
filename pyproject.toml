@@ -1,6 +1,6 @@
 [project]
 name = "flip7live"
-version = "1.1.0"
+version = "1.1.1"
 description = "Lokale Live-Punkteanzeige für das Kartenspiel Flip 7 (Windows, offline)"
 readme = "README.md"
 requires-python = ">=3.12"

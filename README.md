@@ -28,7 +28,7 @@ Smartphone ein. Kein Internet, keine Cloud, kein Konto, keine App-Installation a
 | ⏸️ **Runde aussetzen** | Wer eine Runde nicht mitspielt, bekommt einfach keine Punkte – das zählt auch nicht in die Statistik. |
 | 📊 **Statistik & Historie** | Siege, Siegquote, Durchschnitt, beste Runde – für alle oder einzelne Spieler. Jeder Abend und jede Partie bleibt nachlesbar, Export als CSV/JSON. |
 | 📶 **Netzwerk-Assistent** | Erkennt WLAN, LAN und Hotspot selbst, hilft bei Firewall und „öffentlichem“ Netzwerk und erzeugt den passenden QR-Code. |
-| 💾 **Sicher gespeichert** | Alles liegt lokal in einer SQLite-Datenbank mit automatischen Sicherungen. Ein Update der EXE löscht keine Spielstände. |
+| 💾 **Sicher gespeichert** | Alles liegt lokal in einer SQLite-Datenbank mit automatischen Sicherungen. Einzelne Spieler oder alle Daten lassen sich unter Einstellungen › Daten & Backup löschen – vorher wird automatisch gesichert. |
 
 ## So sieht es aus
 

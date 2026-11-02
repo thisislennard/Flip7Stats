@@ -172,6 +172,7 @@ async function rotate(role) {
 async function renderData() {
   const panel = $('#daten');
   const list = h('ol.sbackups', h('li.skeleton'));
+  const players = h('ol.sbackups.splayers', h('li.skeleton'));
   const openBtn = (target, text) => h('button.btn.btn--tertiary.btn--small', { type: 'button', onclick: async () => {
     try { await api.post('/api/v1/system/open', { target }); } catch (e) { toast(e.message, { type: 'error' }); }
   } }, text);
@@ -196,8 +197,69 @@ async function renderData() {
     group('Export',
       h('div.sbtns',
         h('a.btn.btn--secondary.btn--small', { href: '/api/v1/history/export.csv', download: '' }, 'Spielhistorie als CSV'),
-        h('a.btn.btn--secondary.btn--small', { href: '/api/v1/history/export.json', download: '' }, 'Spielhistorie als JSON'))));
+        h('a.btn.btn--secondary.btn--small', { href: '/api/v1/history/export.json', download: '' }, 'Spielhistorie als JSON'))),
+    group('Spieler',
+      h('p.field__hint', 'Löschen entfernt einen Spieler samt Punkten aus allen Partien; Ranglisten, Sieger und Statistik '
+        + 'werden neu berechnet. Vorher wird automatisch gesichert.'),
+      players),
+    group('Alle Daten löschen',
+      h('p.field__hint', 'Löscht alle Spieler, Spieleabende, Partien und Statistiken – z. B. für einen Neuanfang. '
+        + 'Einstellungen bleiben erhalten. Vorher wird automatisch gesichert; über „Sicherungen“ lässt sich alles zurückholen.'),
+      h('button.btn.btn--danger', { type: 'button', onclick: resetAll }, 'Alle Daten löschen …')));
   loadBackups(list);
+  loadPlayers(players);
+}
+
+async function loadPlayers(host) {
+  try {
+    const items = await api.get('/api/v1/players');
+    if (!items.length) {
+      replace(host, h('li.caption', 'Noch keine Spieler vorhanden.'));
+      return;
+    }
+    replace(host, items.map((p) => h('li.sbackup',
+      h('div', h('div.sbackup__date', p.display_name),
+        h('div.caption', p.games_played ? `${fmt(p.games_played)} ${p.games_played === 1 ? 'Partie' : 'Partien'}`
+          + (p.last_played_at ? ` · zuletzt ${fmtDate(p.last_played_at)}` : '') : 'noch nicht gespielt')),
+      h('button.btn.btn--danger.btn--small', { type: 'button', onclick: () => deletePlayer(p, host) }, 'Löschen'))));
+  } catch (e) {
+    replace(host, h('li.caption', e.message));
+  }
+}
+
+async function deletePlayer(p, host) {
+  const ok = await confirmDialog({ title: `„${p.display_name}“ löschen?`, confirm: 'Endgültig löschen',
+    text: p.games_played
+      ? `${p.display_name} hat ${p.games_played} ${p.games_played === 1 ? 'Partie' : 'Partien'} gespielt. Die Punkte daraus werden `
+        + 'aus allen Partien entfernt – Ranglisten, Sieger und Statistik ändern sich entsprechend. Vorher wird automatisch gesichert.'
+      : 'Der Spieler wird aus der Liste entfernt.' });
+  if (!ok) return;
+  try {
+    await api.del(`/api/v1/players/${p.id}`);
+    toast(`${p.display_name} gelöscht`, { type: 'ok' });
+    loadPlayers(host);
+  } catch (e) {
+    toast(e.message, { type: 'error', duration: 6000 });
+  }
+}
+
+async function resetAll() {
+  const typed = await confirmDialog({ title: 'Wirklich alle Daten löschen?', confirm: 'Alles löschen',
+    text: 'Alle Spieler, Spieleabende, Partien und Statistiken werden gelöscht. Eine Sicherung wird vorher automatisch angelegt. '
+      + 'Zur Bestätigung LÖSCHEN eintippen.',
+    input: { placeholder: 'LÖSCHEN', label: 'Zur Bestätigung LÖSCHEN eintippen' } });
+  if (typed === false) return;
+  if (String(typed).trim().toUpperCase() !== 'LÖSCHEN') {
+    toast('Nichts gelöscht – bitte genau LÖSCHEN eintippen.', { type: 'warn' });
+    return;
+  }
+  try {
+    const r = await api.post('/api/v1/system/reset', { confirm: 'LÖSCHEN' });
+    toast(`Alle Daten gelöscht (${r.players} Spieler, ${r.games} Partien). Sicherung: ${r.backup}`, { type: 'ok', duration: 7000 });
+    renderData();
+  } catch (e) {
+    toast(e.message, { type: 'error' });
+  }
 }
 
 async function loadBackups(list) {

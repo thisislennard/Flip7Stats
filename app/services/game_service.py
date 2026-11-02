@@ -70,7 +70,10 @@ class GameService:
             last_played = dict(s.execute(
                 select(GamePlayer.player_id, func.max(Game.created_at))
                 .join(Game, Game.id == GamePlayer.game_id).group_by(GamePlayer.player_id)).all())
-            return [{**player_dict(p), "last_played_at": iso(last_played.get(p.id))} for p in players]
+            games = dict(s.execute(select(GamePlayer.player_id, func.count(GamePlayer.game_id))
+                                   .group_by(GamePlayer.player_id)).all())
+            return [{**player_dict(p), "last_played_at": iso(last_played.get(p.id)), "games_played": games.get(p.id, 0)}
+                    for p in players]
 
     def create_player(self, data: v.PlayerCreate) -> dict:
         key = name_key(data.display_name)
@@ -98,6 +101,53 @@ class GameService:
             open_game = self._open_game(s)
             affected = open_game.id if open_game and any(gp.player_id == player_id for gp in open_game.players) else None
             return Change(affected, ["game:updated"] if affected else [], {"player": player_dict(p)})
+
+    def delete_player(self, player_id: int) -> dict:
+        """Spieler endgültig löschen – mitsamt seinen Punkten in allen Partien. Ranglisten, Sieger, Abendstände und
+        Statistik werden aus den verbleibenden Daten neu berechnet. Runden, die danach leer sind, entfallen."""
+        from ..models import GameNight, NightStatus
+        with self.db.write() as s:
+            p = s.get(Player, player_id)
+            if p is None:
+                raise NotFound("Diesen Spieler gibt es nicht (mehr).")
+            in_open = s.scalar(select(Game.id).join(GamePlayer, GamePlayer.game_id == Game.id)
+                               .where(GamePlayer.player_id == player_id, Game.status.in_(OPEN_STATUSES)))
+            in_night = s.scalar(select(GameNight.id).join(Game, Game.night_id == GameNight.id)
+                                .join(GamePlayer, GamePlayer.game_id == Game.id)
+                                .where(GamePlayer.player_id == player_id, GameNight.status == NightStatus.ACTIVE))
+            if in_open or in_night:
+                raise Conflict(f"„{p.display_name}“ spielt gerade mit. Bitte erst die Partie bzw. den Spieleabend "
+                               "beenden.", code="player_in_use")
+            game_ids = list(s.scalars(select(GamePlayer.game_id).where(GamePlayer.player_id == player_id)))
+            round_ids = select(Round.id).where(Round.game_id.in_(game_ids))
+            s.execute(delete(RoundScore).where(RoundScore.player_id == player_id, RoundScore.round_id.in_(round_ids)))
+            s.execute(delete(GamePlayer).where(GamePlayer.player_id == player_id))
+            s.flush()
+            for gid in game_ids:  # leere Runden entfernen, Nummerierung lückenlos halten
+                rounds = s.scalars(select(Round).where(Round.game_id == gid).order_by(Round.round_number)).all()
+                number = 0
+                for r in rounds:
+                    if not s.scalar(select(func.count()).select_from(RoundScore).where(RoundScore.round_id == r.id)):
+                        s.delete(r)
+                        s.flush()
+                        continue
+                    number += 1
+                    if r.round_number != number:
+                        r.round_number = number
+                        s.flush()
+            name = p.display_name
+            s.delete(p)
+            return {"deleted": player_id, "name": name, "games": len(game_ids)}
+
+    def delete_everything(self) -> dict:
+        """Alle Spieler, Spieleabende, Partien, Runden und Protokolle löschen (Einstellungen bleiben)."""
+        from ..models import GameNight
+        with self.db.write() as s:
+            counts = {"players": s.scalar(select(func.count()).select_from(Player)),
+                      "games": s.scalar(select(func.count()).select_from(Game))}
+            for model in (RoundScore, Round, GamePlayer, GameEvent, Game, GameNight, Player, IdempotencyRequest):
+                s.execute(delete(model))
+            return counts
 
     # ------------------------------------------------------------------ Spiele
 

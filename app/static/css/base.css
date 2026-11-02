@@ -1,7 +1,9 @@
 /* Grundlagen: Reset, Typografie, Fokus, Seitengerüst. Farben/Größen ausschließlich aus tokens.css. */
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* Platz für den Scrollbalken immer freihalten – sonst springt der Inhalt zwischen Seiten mit und ohne Scrollen. */
+html { -webkit-text-size-adjust: 100%; overflow-x: hidden; scrollbar-gutter: stable; background: var(--color-bg); }
+html:has(body.is-dashboard) { scrollbar-gutter: auto; }  /* Dashboard scrollt nie – kein leerer Rand im Vollbild */
 body {
   margin: 0;
   min-height: 100vh;
@@ -13,7 +15,6 @@ body {
   font-weight: var(--fw-medium);
   line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 img, svg, canvas { display: block; max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -40,7 +41,7 @@ table { border-collapse: collapse; }
 /* ---------- Seitengerüst (alle Seiten außer Dashboard-Vollbild) */
 .page { max-width: 1800px; margin: 0 auto; padding: var(--space-6) var(--space-7) var(--space-8);
   animation: page-in var(--dur-page) var(--ease-out) both; }
-@keyframes page-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }  /* nur einblenden, nicht verschieben */
 
 .topbar { display: flex; align-items: center; gap: var(--space-5); padding: var(--space-4) var(--space-7);
   border-bottom: 1px solid var(--color-line); min-height: 72px; flex-wrap: wrap; }

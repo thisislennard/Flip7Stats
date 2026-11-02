@@ -1,7 +1,7 @@
 /* Live-Dashboard. Vollbild ohne Scrollen ab Laptop-Breite. */
 
 body.is-dashboard { overflow: hidden; }
-.dash { display: flex; flex-direction: column; height: 100vh; height: 100dvh; padding: 0 56px 40px; max-width: 2400px; margin: 0 auto;
+.dash { display: flex; flex-direction: column; height: 100vh; height: 100dvh; padding: 0 var(--space-7) 40px; max-width: 2400px; margin: 0 auto;
   font-size: calc(var(--fs-body) * var(--tv-scale)); }
 
 /* ---------- Statusleiste */
@@ -308,7 +308,7 @@ body.is-dashboard { overflow: hidden; }
 
 /* ---------- Breakpoints */
 @media (min-width: 1024px) and (max-width: 1599px) {
-  .dash { padding: 0 var(--space-6) var(--space-5); }
+  .dash { padding: 0 var(--space-7) var(--space-5); }  /* gleicher Rand wie die Kopfzeile der anderen Seiten */
   .lead { min-height: 260px; }
   .lead__name { font-size: 64px; }
   .lead__score { font-size: 160px; }
@@ -328,7 +328,7 @@ body.is-dashboard { overflow: hidden; }
 }
 @media (max-width: 1023px) {
   body.is-dashboard { overflow: auto; }
-  .dash { height: auto; padding: 0 var(--space-4) var(--space-6); }
+  .dash { height: auto; padding: 0 var(--space-7) var(--space-6); }
   .dash__bar { grid-template-columns: minmax(0, 1fr) auto; min-height: 0; }
   .dash__meta { grid-column: 1 / -1; grid-row: 2; }
   .dash__round, .dash__target { font-size: 48px; }
@@ -340,6 +340,7 @@ body.is-dashboard { overflow: hidden; }
   .lead__score--half { font-size: 72px; }
 }
 @media (max-width: 599px) {
+  .dash { padding: 0 var(--space-4) var(--space-6); }
   .dash__game, .dash__divider { display: none; }
   .dash__bar { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
   .dash__chips { justify-self: start; justify-content: flex-start; }

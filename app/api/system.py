@@ -140,6 +140,20 @@ def firewall_allow():
     return ok({"requested": True, "rule": port is not None, "make_private": private_if is not None})
 
 
+@api.post("/system/reset")
+@require(ADMIN)
+def reset_all():
+    """Nur am Laptop: alle Spieldaten löschen. Erfordert {"confirm": "LÖSCHEN"}; vorher automatische Sicherung."""
+    body = request.get_json(silent=True) or {}
+    if str(body.get("confirm", "")).strip().upper() != "LÖSCHEN":
+        raise Invalid("Zur Bestätigung bitte LÖSCHEN eingeben.", code="confirm_required")
+    c = ctx()
+    backup = c.backup.create("prereset")
+    counts = c.games.delete_everything()
+    c.realtime.broadcast_reset("reset")
+    return ok({**counts, "backup": backup["name"]})
+
+
 @api.post("/system/open")
 @require(ADMIN)
 def open_path():

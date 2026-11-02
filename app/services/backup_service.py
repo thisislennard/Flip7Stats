@@ -31,6 +31,8 @@ REASONS = {
     "migration": "Vor Datenbank-Update",
     "prerestore": "Vor Wiederherstellung",
     "startup": "Programmstart",
+    "predelete": "Vor Löschen eines Spielers",
+    "prereset": "Vor Löschen aller Daten",
 }
 AUTO_INTERVAL_S = 10 * 60
 

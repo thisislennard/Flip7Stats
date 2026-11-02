@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..security import validation as v
-from ..security.authentication import EVERYONE, WRITERS, require
+from ..security.authentication import ADMIN, EVERYONE, WRITERS, require
 from . import api, ctx, ok, parse
 
 
@@ -23,3 +23,14 @@ def rename_player(player_id: int):
     change = ctx().games.rename_player(player_id, parse(v.PlayerUpdate))
     ctx().after_change(change)
     return ok(change.data["player"])
+
+
+@api.delete("/players/<int:player_id>")
+@require(ADMIN)
+def delete_player(player_id: int):
+    """Nur am Laptop: Spieler samt seinen Punkten löschen (vorher automatische Sicherung)."""
+    c = ctx()
+    backup = c.backup.create("predelete")
+    result = c.games.delete_player(player_id)
+    c.realtime.broadcast_reset("player_deleted")
+    return ok({**result, "backup": backup["name"]})
